@@ -1,19 +1,24 @@
 const path = require('path');
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 
 module.exports =  (env, options)=> {
 
     const devMode = options.mode === 'development' 
         ? true 
         : false;
+
     process.env.NODE_ENV = options.mode;
 
     return {
+        mode: options.mode,
         entry: path.resolve(__dirname, './src/index.tsx'),
         output: {
             path: path.resolve(__dirname, './dist'),
             filename: '[name].[contenthash].js',
             chunkFilename: '[name].[contenthash].js',
+            clean: true
         },
         devtool: 'source-map',
         resolve: {
@@ -28,13 +33,27 @@ module.exports =  (env, options)=> {
                 {
                     test: /\.css$/i,
                     include: path.resolve(__dirname, 'src'),
-                    use: ['style-loader', 'css-loader', 'postcss-loader'],
+                    use: [
+                        MiniCssExtractPlugin.loader,
+                        {
+                            loader: "css-loader", options: {
+                                sourceMap: true
+                            }
+                        }, 
+                        {
+                            loader: 'postcss-loader'
+                        }
+                    ],
                 },
-                { test: /\.(woff|ttf|eot)$/, loader: "file-loader" },
+                { test: /\.(woff|woff2|ttf|eot)$/, loader: "file-loader" },
                 { test: /\.(png|jpg|gif|svg)$/,  loader: "file-loader" },
             ]
         },
         plugins: [
+            new MiniCssExtractPlugin({
+                filename: '[name].[contenthash].css',
+                chunkFilename: '[name].[contenthash].css'
+            }),
             new HtmlWebpackPlugin({
                 // inject: false,
                 // hash: true,
@@ -56,6 +75,23 @@ module.exports =  (env, options)=> {
                 }
             })
         ],
+        optimization: {
+            splitChunks: {
+                cacheGroups: {
+                    // vendor chunk
+                    vendor: {
+                        // sync + async chunks
+                        chunks: 'all',
+                        name: 'vendor',
+                        // import file path containing node_modules
+                        test: /node_modules/
+                    }
+                }
+            },
+            minimizer: [
+                new CssMinimizerPlugin(),
+            ],
+        }
     }
 
 };
