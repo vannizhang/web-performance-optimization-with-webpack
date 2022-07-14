@@ -47,8 +47,20 @@ module.exports =  (env, options)=> {
                         }
                     ],
                 },
-                { test: /\.(woff|woff2|ttf|eot)$/, loader: "file-loader" },
-                { test: /\.(png|jpg|gif|svg)$/,  loader: "file-loader" },
+                { 
+                    test: /\.(woff|woff2|ttf|eot)$/,  
+                    loader: "file-loader",
+                    options: {
+                        name: '[name].[contenthash].[ext]',
+                    }
+                },
+                { 
+                    test: /\.(png|jpg|gif|svg)$/,  
+                    loader: "file-loader",
+                    options: {
+                        name: '[name].[contenthash].[ext]',
+                    }
+                },
             ]
         },
         plugins: [

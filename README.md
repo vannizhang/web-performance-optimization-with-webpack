@@ -115,7 +115,8 @@
         ```
 - minify and mangle output JS
     - why:
-    - how: use TerserPlugin, https://github.com/terser/terser
+    - how: use TerserPlugin
+    - references: https://github.com/terser/terser
     ```js
     module.exports = {
         optimization: {
@@ -128,6 +129,51 @@
     ```
 
 - lazy load
+    - split the non-critical codes into its own bundle and and reduce the size of initial bundle
+    - references: https://www.patterns.dev/posts/dynamic-import/, https://www.patterns.dev/posts/prefetch/
+    - how: use react.lazy to dynamic import a component; Components or resources that we know are likely to be used at some point in the application can be prefetched. We can let Webpack know that certain bundles need to be prefetched, by adding a magic comment to the import statement: `/* webpackPrefetch: true */`. 
+
+    lazy load a component
+    ```js
+    import React, { Suspense, lazy, useState } from "react";
+
+    const EmojiPicker = lazy(()=>import(
+        /* webpackPrefetch: true */ 
+        /* webpackChunkName: "emoji-picker" */
+        "../EmojiPicker/EmojiPicker"
+    ))
+
+    const TextInput = () => {
+        const [ showEmoji, setShowEmoji ] = useState(false)
+
+        return (
+            <div>
+                <div>
+                    <input type="text" />
+                    <span onClick={setShowEmoji.bind(null, true)}>show emojis</span>
+                </div>
+                
+                <Suspense fallback={<span id="loading">Loading...</span>}>
+                    {showEmoji && <EmojiPicker />}
+                </Suspense>
+            </div>
+        )
+    }
+
+    export default TextInput
+    ```
+
+    lazy load a module
+    ```js
+    const showRandomNum = async()=>{
+        const { generateRandomNumber } = await import(
+            /* webpackPrefetch: true */ 
+            '../../utils/numbers'
+        )
+        setRandomNum(generateRandomNumber(50, 100))
+    }
+
+    ```
 
 - tree shaking
 
