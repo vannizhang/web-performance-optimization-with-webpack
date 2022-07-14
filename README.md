@@ -113,6 +113,19 @@
             }
         }
         ```
+- minify and mangle output JS
+    - why:
+    - how: use TerserPlugin, https://github.com/terser/terser
+    ```js
+    module.exports = {
+        optimization: {
+            minimize: true,
+            minimizer: [
+                new TerserPlugin()
+            ],
+        },
+    };
+    ```
 
 - lazy load
 
