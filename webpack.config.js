@@ -3,6 +3,7 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const TerserPlugin = require('terser-webpack-plugin');
+const CompressionPlugin = require("compression-webpack-plugin");
 
 module.exports =  (env, options)=> {
 
@@ -74,7 +75,8 @@ module.exports =  (env, options)=> {
                     removeStyleLinkTypeAttributese : true,
                     useShortDoctype                : true
                 }
-            })
+            }),
+            new CompressionPlugin()
         ],
         optimization: {
             splitChunks: {
