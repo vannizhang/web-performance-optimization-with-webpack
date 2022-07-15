@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 
-import mountainImg from './preload.mountain.jpg'
-import seaImage from './prefetch.sea.jpg'
+import mountainImg from '../../static/images/preload/mountain.jpg';
+import seaImage from '../../static/images/prefetch/sea.jpg';
 
 const TopBanner = () => {
 

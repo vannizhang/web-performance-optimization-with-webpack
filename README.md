@@ -87,12 +87,38 @@
 
 ## Images
 - preload critical images and prefetch images that will likely to be used later
-    - how: use PreloadWebpackPlugin
+    - how: use PreloadWebpackPlugin, what I did here is creating two folders './src/static/images/preload' and  './src/static/images/prefetch' and place the image files into these two folders, and moddify the file-loader to add prefix of 'preload' and 'prefetch to the outout file names, and add regex to the fileWhitelist of  PreloadWebpackPlugin
         ```js
         const PreloadWebpackPlugin = require('@vue/preload-webpack-plugin');
 
         module.exports = {
             //...
+            module: {
+                rules: [
+                    { 
+                        test: /\.(png|jpg|gif|svg)$/,  
+                        use : [
+                            {
+                                loader: "file-loader",
+                                options: {
+                                    name(resourcePath, resourceQuery){
+
+                                        if(resourcePath.includes('preload')){
+                                            return 'preload.[contenthash].[ext]';
+                                        } 
+                                        
+                                        if (resourcePath.includes('prefetch')){
+                                            return 'prefetch.[contenthash].[ext]';
+                                        }
+
+                                        return '[contenthash].[ext]';
+                                    },
+                                }
+                            }
+                        ]
+                    },
+                ]
+            },
             plugins: [
                 new PreloadWebpackPlugin({
                     rel: 'preload',
@@ -121,6 +147,8 @@
             ]
         }
         ```
+- minify the image files
+- lazy load images
 
 ## JavaScript
 - split chunks
@@ -235,7 +263,7 @@
         ]
     }
     ```
-    
+
 ## Server side 
 - Improve Website Performance Using gzip: https://www.digitalocean.com/community/tutorials/how-to-improve-website-performance-using-gzip-and-nginx-on-ubuntu-20-04, Normally, this is done by a server like Apache or Nginx on runtime; but you might want to pre-build compressed assets to save the runtime cost. compression-webpack-plugin works for Gzip and Brotli
     - how: 

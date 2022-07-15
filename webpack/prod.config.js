@@ -58,10 +58,28 @@ module.exports =  (env, options)=> {
                 },
                 { 
                     test: /\.(png|jpg|gif|svg)$/,  
-                    loader: "file-loader",
-                    options: {
-                        name: '[name].[contenthash].[ext]',
-                    }
+                    use : [
+                        {
+                            loader: "file-loader",
+                            options: {
+                                name(resourcePath, resourceQuery){
+
+                                    if(resourcePath.includes('preload')){
+                                        return 'preload.[contenthash].[ext]';
+                                    } 
+                                    
+                                    if (resourcePath.includes('prefetch')){
+                                        return 'prefetch.[contenthash].[ext]';
+                                    }
+
+                                    return '[contenthash].[ext]';
+                                },
+                            }
+                        },
+                        {
+                            loader: 'image-webpack-loader',
+                        }
+                    ]
                 },
             ]
         },
