@@ -85,10 +85,42 @@
 - Combine CSS files in a single file (Not needed for HTTP/2)
 - Inlining and preload critical CSS (Not needed for HTTP/2)
 
-
-## Fonts
-
 ## Images
+- preload critical images and prefetch images that will likely to be used later
+    - how: use PreloadWebpackPlugin
+        ```js
+        const PreloadWebpackPlugin = require('@vue/preload-webpack-plugin');
+
+        module.exports = {
+            //...
+            plugins: [
+                new PreloadWebpackPlugin({
+                    rel: 'preload',
+                    as(entry) {
+                        if (/\.(png|jpg|gif|svg)$/.test(entry)) {
+                            return 'image';
+                        }
+                    },
+                    fileWhitelist: [
+                        /preload.*\.(png|jpg|gif|svg)$/
+                    ],
+                    include: 'all'
+                }),
+                new PreloadWebpackPlugin({
+                    rel: 'prefetch',
+                    as(entry) {
+                        if (/\.(png|jpg|gif|svg)$/.test(entry)) {
+                            return 'image';
+                        }
+                    },
+                    fileWhitelist: [
+                        /prefetch.*\.(png|jpg|gif|svg)$/
+                    ],
+                    include: 'all'
+                }),
+            ]
+        }
+        ```
 
 ## JavaScript
 - split chunks
@@ -117,8 +149,12 @@
     - why:
     - how: use TerserPlugin
     - references: https://github.com/terser/terser
+    
     ```js
+    const TerserPlugin = require('terser-webpack-plugin');
+
     module.exports = {
+        //...
         optimization: {
             minimize: true,
             minimizer: [
@@ -177,10 +213,35 @@
 
 - tree shaking
 
+## Fonts
+-  Use preconnect to load your fonts faster:
+    - how: 
+    ```js
+    const HtmlWebpackPlugin = require("html-webpack-plugin");
+    const HtmlWebpackPreconnectPlugin = require('html-webpack-preconnect-plugin');
+
+    module.exports = {
+        //...
+        plugins: [
+            new HtmlWebpackPlugin({
+                filename: 'index.html',
+                //...
+                preconnect: [
+                    'https://webapps-cdn.esri.com'
+                ]
+            }),
+            // enabled preconnect plugin
+            new HtmlWebpackPreconnectPlugin(),
+        ]
+    }
+    ```
+    
 ## Server side 
 - Improve Website Performance Using gzip: https://www.digitalocean.com/community/tutorials/how-to-improve-website-performance-using-gzip-and-nginx-on-ubuntu-20-04, Normally, this is done by a server like Apache or Nginx on runtime; but you might want to pre-build compressed assets to save the runtime cost. compression-webpack-plugin works for Gzip and Brotli
     - how: 
     ```js
+    const CompressionPlugin = require("compression-webpack-plugin");
+
     module.exports = {
         plugins: [
             new CompressionPlugin()

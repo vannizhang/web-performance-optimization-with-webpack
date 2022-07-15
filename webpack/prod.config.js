@@ -4,6 +4,8 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const TerserPlugin = require('terser-webpack-plugin');
 const CompressionPlugin = require("compression-webpack-plugin");
+const PreloadWebpackPlugin = require('@vue/preload-webpack-plugin');
+const HtmlWebpackPreconnectPlugin = require('html-webpack-preconnect-plugin');
 
 module.exports =  (env, options)=> {
 
@@ -86,8 +88,36 @@ module.exports =  (env, options)=> {
                     removeScriptTypeAttributes     : true,
                     removeStyleLinkTypeAttributese : true,
                     useShortDoctype                : true
-                }
+                },
+                preconnect: [
+                    'https://webapps-cdn.esri.com'
+                ]
             }),
+            new PreloadWebpackPlugin({
+                rel: 'preload',
+                as(entry) {
+                    if (/\.(png|jpg|gif|svg)$/.test(entry)) {
+                        return 'image';
+                    }
+                },
+                fileWhitelist: [
+                    /preload.*\.(png|jpg|gif|svg)$/
+                ],
+                include: 'allAssets'
+            }),
+            new PreloadWebpackPlugin({
+                rel: 'prefetch',
+                as(entry) {
+                    if (/\.(png|jpg|gif|svg)$/.test(entry)) {
+                        return 'image';
+                    }
+                },
+                fileWhitelist: [
+                    /prefetch.*\.(png|jpg|gif|svg)$/
+                ],
+                include: 'all'
+            }),
+            new HtmlWebpackPreconnectPlugin(),
             new CompressionPlugin()
         ],
         optimization: {

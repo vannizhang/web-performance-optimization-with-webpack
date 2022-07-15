@@ -3,7 +3,7 @@
         "allowSyntheticDefaultImports": true,
         "allowJs": false,
         "jsx": "react",
-        "module": "ES2015",
+        "module": "CommonJS",
         "noImplicitAny": true,
         "preserveConstEnums": true,
         "removeComments": true,

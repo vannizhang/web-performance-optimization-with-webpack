@@ -1,3 +1,8 @@
+@import url('./fonts.css');
+@import url('./calcite.css');
+
 body {
     background: #e3e3e3;
+    margin: 0;
+    padding: 0;
 }

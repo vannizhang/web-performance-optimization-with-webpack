@@ -23,6 +23,7 @@ module.exports =  {
                 test: /\.css$/i,
                 include: path.resolve(__dirname, '..', 'src'),
                 use: [
+                    'style-loader',
                     {
                         loader: "css-loader", options: {
                             sourceMap: true
