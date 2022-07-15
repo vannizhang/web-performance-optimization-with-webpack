@@ -5,9 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "webpack serve --mode development --open",
-    "dev": "webpack --mode development",
-    "build": "webpack --mode production"
+    "start": "webpack serve --mode development --open --config webpack/dev.config.js",
+    "dev": "webpack --mode development --config webpack/dev.config.js",
+    "build": "webpack --mode production --config webpack/prod.config.js"
   },
   "repository": {
     "type": "git",
@@ -47,6 +47,7 @@
   },
   "dependencies": {
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "webpack-merge": "^5.8.0"
   }
 }

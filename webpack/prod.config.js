@@ -15,9 +15,9 @@ module.exports =  (env, options)=> {
 
     return {
         mode: options.mode,
-        entry: path.resolve(__dirname, './src/index.tsx'),
+        entry: path.resolve(__dirname, '..', './src/index.tsx'),
         output: {
-            path: path.resolve(__dirname, './dist'),
+            path: path.resolve(__dirname, '..', './dist'),
             filename: '[name].[contenthash].js',
             chunkFilename: '[name].[contenthash].js',
             clean: true
@@ -34,7 +34,7 @@ module.exports =  (env, options)=> {
                 },
                 {
                     test: /\.css$/i,
-                    include: path.resolve(__dirname, 'src'),
+                    include: path.resolve(__dirname, '..', 'src'),
                     use: [
                         MiniCssExtractPlugin.loader,
                         {
@@ -71,7 +71,7 @@ module.exports =  (env, options)=> {
             new HtmlWebpackPlugin({
                 // inject: false,
                 // hash: true,
-                template: './public/index.html',
+                template: path.resolve(__dirname, '..', './public/index.html'),
                 filename: 'index.html',
                 minify: {
                     html5                          : true,
@@ -117,6 +117,6 @@ module.exports =  (env, options)=> {
                 }), 
             ],
         }
-    }
+    } 
 
 };
