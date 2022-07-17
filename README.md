@@ -196,6 +196,7 @@
     - split the non-critical codes into its own bundle and and reduce the size of initial bundle
     - references: https://www.patterns.dev/posts/dynamic-import/, https://www.patterns.dev/posts/prefetch/
     - how: use react.lazy to dynamic import a component; Components or resources that we know are likely to be used at some point in the application can be prefetched. We can let Webpack know that certain bundles need to be prefetched, by adding a magic comment to the import statement: `/* webpackPrefetch: true */`. 
+    - need to resolve: why re-export breaking lazy load
 
     lazy load a component
     ```js
@@ -240,6 +241,8 @@
     ```
 
 - tree shaking
+
+- web worker
 
 ## Fonts
 -  Use preconnect to load your fonts faster:
