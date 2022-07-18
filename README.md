@@ -148,6 +148,38 @@
         }
         ```
 - minify the image files
+    - why
+    - how: use `image-webpack-loader` to minify images
+    ```js
+    module.exports = {
+        //...
+        module: {
+            rules: [
+                //...
+                { 
+                    test: /\.(png|jpg|gif|svg)$/,  
+                    use : [
+                        {
+                            loader: "file-loader"
+                        },
+                        {
+                            loader: 'image-webpack-loader',
+                            options: {
+                                mozjpeg: {
+                                    progressive: true,
+                                    quality: 50,
+                                },
+                                pngquant: {
+                                    quality: [0.5, 0.5]
+                                },
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+    ```
 - lazy load images
 
 ## JavaScript

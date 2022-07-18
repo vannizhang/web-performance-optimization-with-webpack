@@ -40,6 +40,7 @@
     "html-webpack-plugin": "^5.5.0",
     "html-webpack-preconnect-plugin": "^1.2.1",
     "image-webpack-loader": "^8.1.0",
+    "imagemin-webpack-plugin": "^2.4.2",
     "mini-css-extract-plugin": "^2.6.1",
     "postcss-loader": "^7.0.1",
     "style-loader": "^3.3.1",
