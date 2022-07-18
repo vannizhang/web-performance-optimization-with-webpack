@@ -1,7 +1,7 @@
 import React from "react";
-import EmojiPickerContainer from "./EmojiPicker/EmojiPickerContainer";
-import RandomNumberCard from "./RandomNumberCard/RandomNumberCard";
-import ImageViewer from "./ImageViewer/ImageViewer";
+import EmojiPickerContainer from "./LazyLoadComponent/EmojiPickerContainer";
+import RandomNumberCard from "./LazyLoadModule/RandomNumberCard";
+import ImageViewer from "./ImageWithResourceHint/ImageViewer";
 
 const Layout = () => {
 
