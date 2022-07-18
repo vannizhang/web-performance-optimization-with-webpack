@@ -1,15 +1,17 @@
 import React from "react";
-import EmojiPickerContainer from "./LazyLoadComponent/EmojiPickerContainer";
-import RandomNumberCard from "./LazyLoadModule/RandomNumberCard";
-import ImageViewer from "./ImageWithResourceHint/ImageViewer";
+import LazyLoadComponent from "./LazyLoadComponent/EmojiPickerContainer";
+import LazyLoadModule from "./LazyLoadModule/RandomNumberCard";
+import ImageWithResourceHint from "./ImageWithResourceHint/ImageViewer";
+import WebWorkerExample from "./WebWorker/WebWorkerExample";
 
 const Layout = () => {
 
     return (
         <>
-            <ImageViewer />
-            <EmojiPickerContainer />
-            <RandomNumberCard />
+            <ImageWithResourceHint />
+            <LazyLoadComponent />
+            <LazyLoadModule />
+            <WebWorkerExample />
         </>
     )
 }

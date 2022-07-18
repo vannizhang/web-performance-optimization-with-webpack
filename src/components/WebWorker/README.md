@@ -10,11 +10,11 @@ This [issue](https://github.com/webpack-contrib/worker-loader/issues/189) provid
 2. added below to `custom.d.ts`:
     ```js
     declare module "worker-loader!*" {
-    class WebpackWorker extends Worker {
-        constructor();
-    }
+        class WebpackWorker extends Worker {
+            constructor();
+        }
 
-    export default WebpackWorker;
+        export default WebpackWorker;
     }
     ```
 
