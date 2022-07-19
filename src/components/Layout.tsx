@@ -3,6 +3,7 @@ import LazyLoadComponent from "./LazyLoadComponent/EmojiPickerContainer";
 import LazyLoadModule from "./LazyLoadModule/RandomNumberCard";
 import ImageWithResourceHint from "./ImageWithResourceHint/ImageViewer";
 import WebWorkerExample from "./WebWorker/WebWorkerExample";
+import WebpImage from "./WebpImage/WebpImage";
 
 const Layout = () => {
 
@@ -12,6 +13,7 @@ const Layout = () => {
             <LazyLoadComponent />
             <LazyLoadModule />
             <WebWorkerExample />
+            <WebpImage />
         </>
     )
 }

@@ -180,6 +180,79 @@
         }
     }
     ```
+- use webp
+    why:
+    how: according to this stackoverflow post: https://stackoverflow.com/questions/58827843/webpack-how-to-convert-jpg-png-to-webp-via-image-webpack-loader
+    1. convert to webp
+    ```js
+    const outputFolder = "./dist";
+
+    const produceWebP = async () => {
+        // Load ESM modules using import(),
+        // it returns a Promise which resolves to
+        // default export as 'default' and other named exports.
+        // In this case we need default export.
+        const imagemin = (await import("imagemin")).default;
+        const webp = (await import("imagemin-webp")).default;
+
+        await imagemin(["./img/*.png"], {
+            destination: outputFolder,
+            plugins: [
+                webp({
+                    lossless: true,
+                }),
+            ],
+        });
+
+        // console.log("PNGs processed");
+        await imagemin(["./img/*.{jpg,jpeg}"], {
+            destination: './img',
+            plugins: [
+                webp({
+                    quality: 65,
+                }),
+            ],
+        });
+
+        console.log("JPGs and JPEGs processed");
+    };
+
+    produceWebP();
+    ```
+
+    2. update the package.json to run the script above before start dev server and build
+    ```js
+    {
+        //...
+        "scripts": {
+            "convert2webp": "node ./scripts/convert2webp.js",
+            "prestart": "npm run convert2webp",
+            "start": "webpack serve --mode development --open --config webpack/dev.config.js",
+            "prebuild": "npm run convert2webp",
+            "build": "webpack --mode production --config webpack/prod.config.js"
+        },
+    }
+    ```
+
+    3. use webp
+    ```js
+    import React from 'react'
+    import nightSkyWebP from '../../static/images/night-sky.webp'
+    import nightSkyJPG from '../../static/images/night-sky.jpg'
+
+    const WebpImage = () => {
+        return (
+            <picture>
+                <source type="image/webp" srcSet={nightSkyWebP} />
+                <source type="image/jpeg" srcSet={nightSkyJPG} />
+                <img src={nightSkyJPG} alt="" width={500}/>
+            </picture>
+        )
+    }
+
+    export default WebpImage
+    ```
+
 - lazy load images
 
 ## JavaScript
@@ -298,6 +371,7 @@
         ]
     }
     ```
+- If your web application uses a service worker, serving font resources with a cache-first strategy is appropriate for most use cases: https://web.dev/optimize-webfont-loading/#proper-caching-is-a-must
 
 ## Server side 
 - content hash in output file names
@@ -312,3 +386,4 @@
         ]
     };
     ```
+- cache policy

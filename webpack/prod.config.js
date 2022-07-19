@@ -57,7 +57,7 @@ module.exports =  (env, options)=> {
                     }
                 },
                 { 
-                    test: /\.(png|jpg|gif|svg)$/,  
+                    test: /\.(png|jpg|gif|svg|webp)$/,  
                     use : [
                         {
                             loader: "file-loader",
@@ -85,7 +85,7 @@ module.exports =  (env, options)=> {
                                 },
                                 pngquant: {
                                     quality: [0.5, 0.5]
-                                },
+                                }
                             }
                         }
                     ]

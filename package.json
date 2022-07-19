@@ -5,8 +5,11 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "convert2webp": "node ./scripts/convert2webp.js",
+    "prestart": "npm run convert2webp",
     "start": "webpack serve --mode development --open --config webpack/dev.config.js",
     "dev": "webpack --mode development --config webpack/dev.config.js",
+    "prebuild": "npm run convert2webp",
     "build": "webpack --mode production --config webpack/prod.config.js"
   },
   "repository": {
@@ -40,6 +43,8 @@
     "html-webpack-plugin": "^5.5.0",
     "html-webpack-preconnect-plugin": "^1.2.1",
     "image-webpack-loader": "^8.1.0",
+    "imagemin": "^8.0.1",
+    "imagemin-webp": "^7.0.0",
     "imagemin-webpack-plugin": "^2.4.2",
     "mini-css-extract-plugin": "^2.6.1",
     "postcss-loader": "^7.0.1",
