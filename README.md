@@ -254,6 +254,10 @@
     ```
 
 - lazy load images
+    why: 
+    how: https://web.dev/lazy-loading-images/
+        - Using browser-level lazy-loading
+        - Using Intersection Observer
 
 ## JavaScript
 - split chunks
@@ -387,3 +391,4 @@
     };
     ```
 - cache policy
+- preconnect
