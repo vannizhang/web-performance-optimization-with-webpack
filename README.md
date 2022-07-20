@@ -256,10 +256,16 @@
 - lazy load images
     why: 
     how: https://web.dev/lazy-loading-images/
-        - Using browser-level lazy-loading
-        - Using Intersection Observer
-
-- serve responsive images
+        - Using browser-level lazy-loading (https://web.dev/browser-level-image-lazy-loading/), recommended 
+        ```html
+        <img src="image.png" loading="lazy" alt="…" width="200" height="200">
+        <picture>
+            <source media="(min-width: 800px)" srcset="large.jpg 1x, larger.jpg 2x">
+            <img src="photo.jpg" loading="lazy">
+        </picture>
+        ```
+        
+- serve responsive images (not finished)
     links: https://web.dev/serve-responsive-images/
     why: Serving desktop-sized images to mobile devices can use 2–4x more data than needed. Instead of a "one-size-fits-all" approach to images, serve different image sizes to different devices.
     how: The sharp package is a good choice for automating image resizing (for example, generating multiple sizes of thumbnails for all the videos on your website).
