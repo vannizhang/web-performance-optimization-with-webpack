@@ -259,6 +259,11 @@
         - Using browser-level lazy-loading
         - Using Intersection Observer
 
+- serve responsive images
+    links: https://web.dev/serve-responsive-images/
+    why: Serving desktop-sized images to mobile devices can use 2–4x more data than needed. Instead of a "one-size-fits-all" approach to images, serve different image sizes to different devices.
+    how: The sharp package is a good choice for automating image resizing (for example, generating multiple sizes of thumbnails for all the videos on your website).
+
 ## JavaScript
 - split chunks
     - why: Code split vendors with webpack can help to improve caching: https://blog.jakoblind.no/code-split-vendors-with-webpack-for-faster-load-speed/
