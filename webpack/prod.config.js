@@ -17,10 +17,23 @@ module.exports =  (env, options)=> {
 
     return {
         mode: options.mode,
-        entry: path.resolve(__dirname, '..', './src/index.tsx'),
+        entry: {
+            main: path.resolve(__dirname, '..', './src/index.tsx'),
+            sw: path.resolve(__dirname, '..', './src/serviceWorker/sw.js'),
+        },
         output: {
             path: path.resolve(__dirname, '..', './dist'),
-            filename: '[name].[contenthash].js',
+            filename: ({runtime}) => {
+                // Check if the current filename is for the service worker:
+                if (runtime === 'sw') {
+                    // Output a service worker in the root of the dist directory
+                    // Also, ensure the output file name doesn't have a hash in it
+                    return '[name].js';
+                }
+        
+                // Otherwise, output files as normal
+                return '[name].[contenthash].js';
+            },
             chunkFilename: '[name].[contenthash].js',
             clean: true
         },
@@ -102,6 +115,7 @@ module.exports =  (env, options)=> {
                 // hash: true,
                 template: path.resolve(__dirname, '..', './public/index.html'),
                 filename: 'index.html',
+                chunks: ['main'],
                 minify: {
                     html5                          : true,
                     collapseWhitespace             : true,

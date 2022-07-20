@@ -81,7 +81,7 @@
         },
     };
     ```
-- Shorten CSS class names vs tailwind.css
+- use tailwind.css also helps reduce the size of output css
 - Combine CSS files in a single file (Not needed for HTTP/2)
 - Inlining and preload critical CSS (Not needed for HTTP/2)
 
@@ -386,7 +386,10 @@
         ]
     }
     ```
-- If your web application uses a service worker, serving font resources with a cache-first strategy is appropriate for most use cases: https://web.dev/optimize-webfont-loading/#proper-caching-is-a-must
+- If your web application uses a service worker, serving font resources with a cache-first strategy is appropriate for most use cases: 
+    https://web.dev/optimize-webfont-loading/#proper-caching-is-a-must
+    https://developer.chrome.com/docs/workbox/using-workbox-without-precaching/
+    https://developer.chrome.com/docs/workbox/caching-strategies-overview/
 
 ## Server side 
 - content hash in output file names

@@ -7,7 +7,9 @@ const LazyLoadImage = () => {
 
         for(let i =0; i < 10; i++){
             images.push(
-                <div>
+                <div
+                    key={i}
+                >
                     <img 
                         key={i} 
                         height={250} 
