@@ -440,7 +440,8 @@ module.exports = {
             filename: 'index.html',
             //...
             preconnect: [
-                'https://webapps-cdn.esri.com'
+                'https://fonts.googleapis.com',
+                'https://fonts.gstatic.com'
             ]
         }),
         // enabled preconnect plugin
@@ -474,3 +475,9 @@ according to https://developer.chrome.com/docs/workbox/caching-strategies-overvi
     };
     ```
 - preconnect, and dns-prefecting
+
+## Resources
+
+## Contribute
+
+## License

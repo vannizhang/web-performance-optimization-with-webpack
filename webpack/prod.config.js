@@ -131,7 +131,7 @@ module.exports =  (env, options)=> {
                     useShortDoctype                : true
                 },
                 preconnect: [
-                    'https://webapps-cdn.esri.com'
+                    // 'https://fonts.googleapis.com',
                 ]
             }),
             new PreloadWebpackPlugin({

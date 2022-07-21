@@ -1,8 +1,5 @@
-@import url('./fonts.css');
-@import url('./calcite.css');
-
 body {
-    background: #e3e3e3;
+    font-family: 'Open Sans', sans-serif;
     margin: 0;
     padding: 0;
 }
