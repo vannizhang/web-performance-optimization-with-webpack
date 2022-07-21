@@ -128,9 +128,9 @@ module.exports = {
 ```
 
 ### Inline Critical CSS
-Inlining extracted CSS for critical (above-the-fold) content in the `<head>` of the HTML document to speed up render time.
+Inlining extracted CSS for critical (above-the-fold) content in the `<head>` of the HTML document eliminates the need to make an additional request to fetch these styles, which can help to speed up render times.
 
-Use the [`html-critical-webpack-plugin`](https://github.com/anthonygore/html-critical-webpack-plugin) to extracts, minifies and inlines above-the-fold CSS:
+Use the [`html-critical-webpack-plugin`](https://github.com/anthonygore/html-critical-webpack-plugin) to extracts, minifies and inlines above-the-fold CSS.
 
 [`webpack.config.js`](./webpack/prod.config.js)
 ```js
