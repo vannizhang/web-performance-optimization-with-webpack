@@ -19,7 +19,7 @@
     - minify and mangle output JS
     - lazy load component and modules
     - use web worker
--Fonts
+- Fonts
     - preconnect
     - cache strategy
 - Service Worker
@@ -436,4 +436,4 @@
         ]
     };
     ```
-- preconnect
+- preconnect, and dns-prefecting
