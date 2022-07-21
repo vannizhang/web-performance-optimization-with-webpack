@@ -390,6 +390,13 @@
     https://web.dev/optimize-webfont-loading/#proper-caching-is-a-must
     https://developer.chrome.com/docs/workbox/using-workbox-without-precaching/
     https://developer.chrome.com/docs/workbox/caching-strategies-overview/
+    - how: 
+    ./src/serviceWorker
+
+## service worker
+- cache strategy
+    - cache fonts and other static files
+    according to https://developer.chrome.com/docs/workbox/caching-strategies-overview/, **Cache first, falling back to network** is a great strategy to apply to all static assets (such as CSS, JavaScript, images, and fonts), especially hash-versioned ones. It offers a speed boost for immutable assets by side-stepping any content freshness checks with the server the HTTP cache may kick off. More importantly, any cached assets will be available offline.
 
 ## Server side 
 - content hash in output file names
@@ -404,5 +411,4 @@
         ]
     };
     ```
-- cache policy
 - preconnect
