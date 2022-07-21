@@ -3,12 +3,12 @@
 ## Summary
 
 ## Contents
-- HTML
-    - Minified HTML
-- CSS 
-    - Extract CSS
-    - Minified CSS
-    - use tailwind
+- [HTML](#html)
+    - [Minified HTML](#minified-html)
+- [CSS](#css)
+    - [Extracts CSS](#extracts-css)
+    - [Minified CSS](#minified-css)
+    - [Inline Critical CSS](#inline-critical-css)
 - Images
     - preload critical images and prefetch images
     - compress the image files
@@ -28,40 +28,55 @@
 ## HTML
 
 ### Minified HTML 
-- Why: Removing all unnecessary spaces, comments and attributes will reduce the size of your HTML and speed up your site's page load times and obviously lighten the download for your user.
-- How: the HtmlWebpackPlugin has the minify option to control how the output html shoud be minified
-    ```js
-    module.exports = {
-        //...
-        plugins: [
-            new HtmlWebpackPlugin({
-                ...
-                minify: {
-                    html5                          : true,
-                    collapseWhitespace             : true,
-                    minifyCSS                      : true,
-                    minifyJS                       : true,
-                    minifyURLs                     : false,
-                    removeComments                 : true,
-                    removeEmptyAttributes          : true,
-                    removeOptionalTags             : true,
-                    // Remove attributes when value matches default.
-                    removeRedundantAttributes      : true,
-                    // Remove type="text/javascript" from script tags. Other type attribute values are left intact
-                    removeScriptTypeAttributes     : true,
-                    // Remove type="text/css" from style and link tags. Other type attribute values are left intact
-                    removeStyleLinkTypeAttributese : true,
-                    // Replaces the doctype with the short (HTML5) doctype
-                    useShortDoctype                : true
-                }
-            })
-        ]
-    }
-    ```
+Minify the HTML by removing unnecessary spaces, comments and attributes to reduce the size of output HTML file and speed up load times.
+
+The [`HtmlWebpackPlugin`](https://webpack.js.org/plugins/html-webpack-plugin/) has the [`minify`](https://github.com/jantimon/html-webpack-plugin#minification) option to control how the output html shoud be minified:
+
+[`webpack.config.js`](./webpack/prod.config.js)
+```js
+const HtmlWebpackPlugin = require("html-webpack-plugin");
+
+module.exports = {
+    //...
+    plugins: [
+        new HtmlWebpackPlugin({
+            ...
+            minify: {
+                html5                          : true,
+                collapseWhitespace             : true,
+                minifyCSS                      : true,
+                minifyJS                       : true,
+                minifyURLs                     : false,
+                removeComments                 : true,
+                removeEmptyAttributes          : true,
+                removeOptionalTags             : true,
+                // Remove attributes when value matches default.
+                removeRedundantAttributes      : true,
+                // Remove type="text/javascript" from script tags. 
+                // Other type attribute values are left intact
+                removeScriptTypeAttributes     : true,
+                // Remove type="text/css" from style and link tags. 
+                // Other type attribute values are left intact
+                removeStyleLinkTypeAttributese : true,
+                // Replaces the doctype with the short (HTML5) doctype
+                useShortDoctype                : true
+            }
+        })
+    ]
+}
+```
 
 ## CSS
-### extracts CSS into separate files
+
+### Extracts CSS
+The extracted css stylesheets can be cached separately. Therefore if your app code changes, the browser only needs to fetch the JS files that changed.
+
+Use [`MiniCssExtractPlugin`](https://webpack.js.org/plugins/mini-css-extract-plugin/) to extract CSS into separate files:
+
+[`webpack.config.js`](./webpack/prod.config.js)
 ```js
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+
 module.exports = {
     //...
     module: {
@@ -69,12 +84,11 @@ module.exports = {
             //...
             {
                 test: /\.css$/i,
-                include: path.resolve(__dirname, 'src'),
+                include: path.resolve(__dirname, '..', 'src'),
                 use: [
                     MiniCssExtractPlugin.loader,
                     {
-                        loader: "css-loader", 
-                        options: {
+                        loader: "css-loader", options: {
                             sourceMap: true
                         }
                     }, 
@@ -82,8 +96,7 @@ module.exports = {
                         loader: 'postcss-loader'
                     }
                 ],
-            },
-
+            }
         ]
     },
     plugins: [
@@ -94,9 +107,16 @@ module.exports = {
 }
 ```
 
-### Minify CSS: All CSS files are minified, comments, white spaces and new lines are removed from production files.
-- how: To minify the output, use a plugin like `css-minimizer-webpack-plugin`
+### Minify CSS
+
+Remove unnecessary characters, such as comments, whitespaces, and indentation to reduce the size of output CSS files and speed up how long it takes for the browser to download and execute it.
+
+Use the [`css-minimizer-webpack-plugin`](https://webpack.js.org/plugins/css-minimizer-webpack-plugin/) to optimize and minify the output CSS.
+
+[`webpack.config.js`](./webpack/prod.config.js)
 ```js
+const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
+
 module.exports = {
     //...
     optimization: {
@@ -106,11 +126,9 @@ module.exports = {
     },
 };
 ```
-### use tailwind.css also helps reduce the size of output css
 
-### Others
-- Combine CSS files in a single file (Not needed for HTTP/2)
-- Inlining and preload critical CSS (Not needed for HTTP/2)
+### Inline Critical CSS
+Inlining extracted CSS for critical (above-the-fold) content in the `<head>` of the HTML document can help to speed up render time.
 
 ## Images
 
@@ -477,6 +495,9 @@ according to https://developer.chrome.com/docs/workbox/caching-strategies-overvi
 - preconnect, and dns-prefecting
 
 ## Resources
+- [Fast load times](https://web.dev/fast/)
+- [Front-End Performance Checklist](https://github.com/thedaviddias/Front-End-Performance-Checklist)
+- [Awesome Webpack Perf ](https://github.com/iamakulov/awesome-webpack-perf)
 
 ## Contribute
 
