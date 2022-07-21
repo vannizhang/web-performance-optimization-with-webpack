@@ -1,4 +1,4 @@
-# front-end-performance-tips
+# Web performance optimization with Webpack
 
 ## Summary
 
@@ -12,8 +12,11 @@
 - [Images](#images)
     - [Compress images](#compress-images)
     - [Use WebP Images](#use-webp-images)
-    - preload critical images and prefetch images
+    - [Preload and prefetch images](#preload-and-prefetch-images)
     - [Lazy loading images](#lazy-loading-images)
+    <!---
+    - [Serve responsive images](#serve-responsive-images-not-finished)
+    -->
 - JavaScript
     - split chunks
     - minify and mangle output JS
@@ -306,8 +309,19 @@ const WebpImage = () => {
 export default WebpImage
 ```
 
-### preload critical images and prefetch images that will likely to be used later
-- how: use PreloadWebpackPlugin, what I did here is creating two folders './src/static/images/preload' and  './src/static/images/prefetch' and place the image files into these two folders, and moddify the file-loader to add prefix of 'preload' and 'prefetch to the outout file names, and add regex to the fileWhitelist of  PreloadWebpackPlugin
+### Preload and prefetch images
+
+Preload lets you tell the browser about critical resources that you want to load as soon as possible, before they are discovered in HTML, CSS or JavaScript files. This is especially useful for resources that are critical but not easily discoverable, such as banner images included in JavaScript or CSS file.
+
+Use [`@vue/preload-webpack-plugin`](https://github.com/vuejs/preload-webpack-plugin) to automatically inject resource hints tags `<link rel='preload'>` or `<link rel='prefetch'>` into the document `<head>`.
+
+It's important to use `<link rel='preload'>` **sparingly** and only preload the **most critical** resources. 
+
+To do this, we can keep all images that need to be preloaded in the `./src/static/images/preload` folder, then modify `file-loader` to add prefix `"preload."` to the output name for the images in this folder, after that, we can set `fileWhitelist` option of `preload-webpack-plugin` to only inject `<link rel='preload'>` for images with `"preload."` prefix in their names.
+
+and we can repeat the step above to inject `<link rel='prefetch'>` for images that are less important but will very likely be needed later. 
+
+[`webpack.config.js`](./webpack/prod.config.js)
 ```js
 const PreloadWebpackPlugin = require('@vue/preload-webpack-plugin');
 
@@ -316,17 +330,19 @@ module.exports = {
     module: {
         rules: [
             { 
-                test: /\.(png|jpg|gif|svg)$/,  
+                test: /\.(png|jpg|gif|svg|webp)$/,  
                 use : [
                     {
                         loader: "file-loader",
                         options: {
                             name(resourcePath, resourceQuery){
 
+                                // add "preload." prefix to images in preload folder
                                 if(resourcePath.includes('preload')){
                                     return 'preload.[contenthash].[ext]';
                                 } 
                                 
+                                // add "prefetch." prefix to images in prefetch folder
                                 if (resourcePath.includes('prefetch')){
                                     return 'prefetch.[contenthash].[ext]';
                                 }
@@ -347,6 +363,7 @@ module.exports = {
                     return 'image';
                 }
             },
+            // only inject `<link rel='preload'>` for images with `"preload."` prefix in their names
             fileWhitelist: [
                 /preload.*\.(png|jpg|gif|svg|webp)$/
             ],
@@ -359,6 +376,7 @@ module.exports = {
                     return 'image';
                 }
             },
+            // only inject `<link rel='prefetch'>` for images with `"prefetch."` prefix in their names
             fileWhitelist: [
                 /prefetch.*\.(png|jpg|gif|svg|webp)$/
             ],
@@ -369,21 +387,28 @@ module.exports = {
 ```
 
 ### Lazy loading images
-why: 
-how: https://web.dev/lazy-loading-images/
-    - Using browser-level lazy-loading (https://web.dev/browser-level-image-lazy-loading/), recommended 
-    ```html
-    <img src="image.png" loading="lazy" alt="…" width="200" height="200">
-    <picture>
-        <source media="(min-width: 800px)" srcset="large.jpg 1x, larger.jpg 2x">
-        <img src="photo.jpg" loading="lazy">
-    </picture>
-    ```
-        
-###  serve responsive images (not finished)
-links: https://web.dev/serve-responsive-images/
-why: Serving desktop-sized images to mobile devices can use 2–4x more data than needed. Instead of a "one-size-fits-all" approach to images, serve different image sizes to different devices.
-how: The sharp package is a good choice for automating image resizing (for example, generating multiple sizes of thumbnails for all the videos on your website).
+Lazy load offscreen images will improve the response time of the current page and then avoid loading unnecessary images that the user may not need.
+
+Fortunately we don't need to tune webpack to enable lazy load image, just use browser-level lazy-loading with the `loading` attribute, use `lazy` as the value to tell the browser to load the image immediately if it is in the viewport, and to fetch other images when the user scrolls near them.
+
+You can also use `Intersection Observer` or `event handlers` to polyfill lazy-loading of `<img>`: [more details](https://web.dev/lazy-loading-images/#images-inline-intersection-observer)
+
+Here is an example of `<img>` with `loading="lazy"`:
+```html
+<img src="image.png" loading="lazy" alt="…" width="200" height="200">
+<picture>
+    <source media="(min-width: 800px)" srcset="large.jpg 1x, larger.jpg 2x">
+    <img src="photo.jpg" loading="lazy">
+</picture>
+```
+
+<!---
+###  Serve responsive images (not finished)
+According to [this article](https://web.dev/serve-responsive-images/):
+> Serving desktop-sized images to mobile devices can use 2–4x more data than needed. Instead of a "one-size-fits-all" approach to images, serve different image sizes to different devices.
+
+It seems [`responsive-loader`](https://github.com/dazuaz/responsive-loader) can be a good tool to use but I encountered error when using it with TypeScipt. 
+-->
 
 ## JavaScript
 ### split chunks
@@ -534,6 +559,7 @@ according to https://developer.chrome.com/docs/workbox/caching-strategies-overvi
 - [Front-End Performance Checklist](https://github.com/thedaviddias/Front-End-Performance-Checklist)
 - [Awesome Webpack Perf ](https://github.com/iamakulov/awesome-webpack-perf)
 - [Critical CSS and Webpack: Automatically Minimize Render-Blocking CSS](https://vuejsdevelopers.com/2017/07/24/critical-css-webpack/)
+- [Webpack - How to convert jpg/png to webp via image-webpack-loader](https://stackoverflow.com/questions/58827843/webpack-how-to-convert-jpg-png-to-webp-via-image-webpack-loader)
 
 ## Contribute
 
