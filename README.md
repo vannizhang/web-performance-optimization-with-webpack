@@ -9,11 +9,11 @@
     - [Extracts CSS](#extracts-css)
     - [Minified CSS](#minified-css)
     - [Inline Critical CSS](#inline-critical-css)
-- Images
+- [Images](#images)
+    - [Compress images](#compress-images)
+    - [Use WebP Images](#use-webp-images)
     - preload critical images and prefetch images
-    - compress the image files
-    - webp
-    - lazy load image
+    - [Lazy loading images](#lazy-loading-images)
 - JavaScript
     - split chunks
     - minify and mangle output JS
@@ -159,72 +159,14 @@ module.exports = {
 ```
 
 ## Images
+According to [Ilya Grigorik](https://www.igvita.com/):
+> Images often account for most of the downloaded bytes on a web page and also often occupy a significant amount of visual space. As a result, optimizing images can often yield some of the largest byte savings and performance improvements for your website. [More details](https://web.dev/compress-images/)
 
-### preload critical images and prefetch images that will likely to be used later
-- how: use PreloadWebpackPlugin, what I did here is creating two folders './src/static/images/preload' and  './src/static/images/prefetch' and place the image files into these two folders, and moddify the file-loader to add prefix of 'preload' and 'prefetch to the outout file names, and add regex to the fileWhitelist of  PreloadWebpackPlugin
-    ```js
-    const PreloadWebpackPlugin = require('@vue/preload-webpack-plugin');
+### Compress images
 
-    module.exports = {
-        //...
-        module: {
-            rules: [
-                { 
-                    test: /\.(png|jpg|gif|svg)$/,  
-                    use : [
-                        {
-                            loader: "file-loader",
-                            options: {
-                                name(resourcePath, resourceQuery){
+Use [`image-webpack-loader`](https://github.com/tcoopman/image-webpack-loader) to minify PNG, JPEG, GIF, SVG and WEBP images with [`imagemin`](https://github.com/imagemin/imagemin).
 
-                                    if(resourcePath.includes('preload')){
-                                        return 'preload.[contenthash].[ext]';
-                                    } 
-                                    
-                                    if (resourcePath.includes('prefetch')){
-                                        return 'prefetch.[contenthash].[ext]';
-                                    }
-
-                                    return '[contenthash].[ext]';
-                                },
-                            }
-                        }
-                    ]
-                },
-            ]
-        },
-        plugins: [
-            new PreloadWebpackPlugin({
-                rel: 'preload',
-                as(entry) {
-                    if (/\.(png|jpg|gif|svg|webp)$/.test(entry)) {
-                        return 'image';
-                    }
-                },
-                fileWhitelist: [
-                    /preload.*\.(png|jpg|gif|svg|webp)$/
-                ],
-                include: 'allAssets'
-            }),
-            new PreloadWebpackPlugin({
-                rel: 'prefetch',
-                as(entry) {
-                    if (/\.(png|jpg|gif|svg|webp)$/.test(entry)) {
-                        return 'image';
-                    }
-                },
-                fileWhitelist: [
-                    /prefetch.*\.(png|jpg|gif|svg|webp)$/
-                ],
-                include: 'allAssets'
-            }),
-        ]
-    }
-    ```
-### minify the image files
-
-- why
-- how: use `image-webpack-loader` to minify images
+[`webpack.config.js`](./webpack/prod.config.js)
 ```js
 module.exports = {
     //...
@@ -232,7 +174,7 @@ module.exports = {
         rules: [
             //...
             { 
-                test: /\.(png|jpg|gif|svg)$/,  
+                test: /\.(png|jpg|gif|svg|webp)$/,  
                 use : [
                     {
                         loader: "file-loader"
@@ -255,10 +197,13 @@ module.exports = {
     }
 }
 ```
-### use webp
-why:
-how: according to this stackoverflow post: https://stackoverflow.com/questions/58827843/webpack-how-to-convert-jpg-png-to-webp-via-image-webpack-loader
-1. convert to webp
+
+### Use WebP Images
+WebP images are smaller than their JPEG and PNG counterparts - usually on the magnitude of a 25–35% reduction in filesize. This decreases page sizes and improves performance. [More details](https://web.dev/serve-images-webp/)
+
+Use `imagemin` and  `imagemin-webp` to convert images to WebP, here is a script that converts all JPEG and PNG images in the `./src/static/images` folder to WebP:
+
+[convert2webp.js](./scripts/convert2webp.js)
 ```js
 const path = require('path');
 const imageFolder = path.join(__dirname, '..', 'src', 'static', 'images')
@@ -328,7 +273,7 @@ const run = async () => {
 run();
 ```
 
-2. update the package.json to run the script above before start dev server and build
+Modify `"scripts"` section in `package.json` to add `"pre"` scripts, so npm can automatically run `convert2webp` before `npm run build` or `npm run start`.
 ```js
 {
     //...
@@ -342,7 +287,7 @@ run();
 }
 ```
 
-3. use webp
+Here is an example of serving WebP images to WebP to newer browsers and a fallback image to older browsers:
 ```js
 import React from 'react'
 import nightSkyWebP from '../../static/images/night-sky.webp'
@@ -361,7 +306,69 @@ const WebpImage = () => {
 export default WebpImage
 ```
 
-### lazy load images
+### preload critical images and prefetch images that will likely to be used later
+- how: use PreloadWebpackPlugin, what I did here is creating two folders './src/static/images/preload' and  './src/static/images/prefetch' and place the image files into these two folders, and moddify the file-loader to add prefix of 'preload' and 'prefetch to the outout file names, and add regex to the fileWhitelist of  PreloadWebpackPlugin
+```js
+const PreloadWebpackPlugin = require('@vue/preload-webpack-plugin');
+
+module.exports = {
+    //...
+    module: {
+        rules: [
+            { 
+                test: /\.(png|jpg|gif|svg)$/,  
+                use : [
+                    {
+                        loader: "file-loader",
+                        options: {
+                            name(resourcePath, resourceQuery){
+
+                                if(resourcePath.includes('preload')){
+                                    return 'preload.[contenthash].[ext]';
+                                } 
+                                
+                                if (resourcePath.includes('prefetch')){
+                                    return 'prefetch.[contenthash].[ext]';
+                                }
+
+                                return '[contenthash].[ext]';
+                            },
+                        }
+                    }
+                ]
+            },
+        ]
+    },
+    plugins: [
+        new PreloadWebpackPlugin({
+            rel: 'preload',
+            as(entry) {
+                if (/\.(png|jpg|gif|svg|webp)$/.test(entry)) {
+                    return 'image';
+                }
+            },
+            fileWhitelist: [
+                /preload.*\.(png|jpg|gif|svg|webp)$/
+            ],
+            include: 'allAssets'
+        }),
+        new PreloadWebpackPlugin({
+            rel: 'prefetch',
+            as(entry) {
+                if (/\.(png|jpg|gif|svg|webp)$/.test(entry)) {
+                    return 'image';
+                }
+            },
+            fileWhitelist: [
+                /prefetch.*\.(png|jpg|gif|svg|webp)$/
+            ],
+            include: 'allAssets'
+        }),
+    ]
+}
+```
+
+### Lazy loading images
 why: 
 how: https://web.dev/lazy-loading-images/
     - Using browser-level lazy-loading (https://web.dev/browser-level-image-lazy-loading/), recommended 
