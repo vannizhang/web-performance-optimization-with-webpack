@@ -128,7 +128,35 @@ module.exports = {
 ```
 
 ### Inline Critical CSS
-Inlining extracted CSS for critical (above-the-fold) content in the `<head>` of the HTML document can help to speed up render time.
+Inlining extracted CSS for critical (above-the-fold) content in the `<head>` of the HTML document to speed up render time.
+
+Use the [`html-critical-webpack-plugin`](https://github.com/anthonygore/html-critical-webpack-plugin) to extracts, minifies and inlines above-the-fold CSS:
+
+[`webpack.config.js`](./webpack/prod.config.js)
+```js
+const HtmlCriticalPlugin = require("html-critical-webpack-plugin");
+
+module.exports = {
+    //...
+    plugins: [
+        new HtmlWebpackPlugin({ ... }),
+        new MiniCssExtractPlugin({ ... }),
+        new HtmlCriticalPlugin({
+            base: path.join(path.resolve(__dirname), '..', 'dist/'),
+            src: 'index.html',
+            dest: 'index.html',
+            inline: true,
+            minify: true,
+            extract: true,
+            width: 1400,
+            height: 900,
+            penthouse: {
+                blockJSRequests: false,
+            }
+        }),
+    ]
+}
+```
 
 ## Images
 
@@ -498,6 +526,7 @@ according to https://developer.chrome.com/docs/workbox/caching-strategies-overvi
 - [Fast load times](https://web.dev/fast/)
 - [Front-End Performance Checklist](https://github.com/thedaviddias/Front-End-Performance-Checklist)
 - [Awesome Webpack Perf ](https://github.com/iamakulov/awesome-webpack-perf)
+- [Critical CSS and Webpack: Automatically Minimize Render-Blocking CSS](https://vuejsdevelopers.com/2017/07/24/critical-css-webpack/)
 
 ## Contribute
 

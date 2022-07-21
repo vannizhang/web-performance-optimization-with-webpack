@@ -2,6 +2,7 @@ const path = require('path');
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
+const HtmlCriticalPlugin = require("html-critical-webpack-plugin");
 const TerserPlugin = require('terser-webpack-plugin');
 const CompressionPlugin = require("compression-webpack-plugin");
 const PreloadWebpackPlugin = require('@vue/preload-webpack-plugin');
@@ -133,6 +134,19 @@ module.exports =  (env, options)=> {
                 preconnect: [
                     // 'https://fonts.googleapis.com',
                 ]
+            }),
+            new HtmlCriticalPlugin({
+                base: path.join(path.resolve(__dirname), '..', 'dist/'),
+                src: 'index.html',
+                dest: 'index.html',
+                inline: true,
+                minify: true,
+                extract: true,
+                width: 1400,
+                height: 900,
+                penthouse: {
+                    blockJSRequests: false,
+                }
             }),
             new PreloadWebpackPlugin({
                 rel: 'preload',
