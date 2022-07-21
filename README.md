@@ -151,26 +151,26 @@ module.exports = {
             new PreloadWebpackPlugin({
                 rel: 'preload',
                 as(entry) {
-                    if (/\.(png|jpg|gif|svg)$/.test(entry)) {
+                    if (/\.(png|jpg|gif|svg|webp)$/.test(entry)) {
                         return 'image';
                     }
                 },
                 fileWhitelist: [
-                    /preload.*\.(png|jpg|gif|svg)$/
+                    /preload.*\.(png|jpg|gif|svg|webp)$/
                 ],
-                include: 'all'
+                include: 'allAssets'
             }),
             new PreloadWebpackPlugin({
                 rel: 'prefetch',
                 as(entry) {
-                    if (/\.(png|jpg|gif|svg)$/.test(entry)) {
+                    if (/\.(png|jpg|gif|svg|webp)$/.test(entry)) {
                         return 'image';
                     }
                 },
                 fileWhitelist: [
-                    /prefetch.*\.(png|jpg|gif|svg)$/
+                    /prefetch.*\.(png|jpg|gif|svg|webp)$/
                 ],
-                include: 'all'
+                include: 'allAssets'
             }),
         ]
     }
