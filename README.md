@@ -1,5 +1,30 @@
 # front-end-performance-tips
 
+## Summary
+
+## Contents
+- HTML
+    - Minified HTML
+- CSS 
+    - Extract CSS
+    - Minified CSS
+    - use tailwind
+- Images
+    - preload critical images and prefetch images
+    - compress the image files
+    - webp
+    - lazy load image
+- JavaScript
+    - split chunks
+    - minify and mangle output JS
+    - lazy load component and modules
+    - use web worker
+-Fonts
+    - preconnect
+    - cache strategy
+- Service Worker
+- Server side
+
 ## HTML
 - Minified HTML 
     - Why: Removing all unnecessary spaces, comments and attributes will reduce the size of your HTML and speed up your site's page load times and obviously lighten the download for your user.
