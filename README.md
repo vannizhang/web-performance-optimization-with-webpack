@@ -17,7 +17,7 @@
     <!---
     - [Serve responsive images](#serve-responsive-images-not-finished)
     -->
-- JavaScript
+- [JavaScript](#javascript)
     - [Split chunks](#split-chunks)
     - [Minified JS](#minified-js)
     - lazy load component and modules
@@ -576,5 +576,7 @@ according to https://developer.chrome.com/docs/workbox/caching-strategies-overvi
 - [Webpack - How to convert jpg/png to webp via image-webpack-loader](https://stackoverflow.com/questions/58827843/webpack-how-to-convert-jpg-png-to-webp-via-image-webpack-loader)
 
 ## Contribute
+Please feel free to open an issue or a pull request to suggest changes, improvements or fixes.
 
 ## License
+[MIT](./LICENSE)
