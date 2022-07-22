@@ -20,8 +20,8 @@
 - [JavaScript](#javascript)
     - [Split chunks](#split-chunks)
     - [Minified JS](#minified-js)
-    - lazy load component and modules
-    - use web worker
+    - [Lazy Loading JS](#lazy-loading-js)
+    - [Use web worker](#use-web-worker)
 - Fonts
     - preconnect
     - cache strategy
@@ -464,59 +464,147 @@ module.exports = {
 };
 ```
 
-### lazy load
-- split the non-critical codes into its own bundle and and reduce the size of initial bundle
-- references: https://www.patterns.dev/posts/dynamic-import/, https://www.patterns.dev/posts/prefetch/
-- how: use react.lazy to dynamic import a component; Components or resources that we know are likely to be used at some point in the application can be prefetched. We can let Webpack know that certain bundles need to be prefetched, by adding a magic comment to the import statement: `/* webpackPrefetch: true */`. 
-- need to resolve: why re-export breaking lazy load
+### Lazy loading JS
+Split the non-critical codes into its own bundle and reduce the size of initial bundle can make the initial load faster. Then dynamically import these non-critical codes on demand.
 
-lazy load a component
+Use `react.lazy` to dynamic import a component. The components or modules that we know are likely to be used at some point in the application can be prefetched, according to [this ariticle](https://www.patterns.dev/posts/prefetch/):
+
+> Modules that are prefetched are requested and loaded by the browser even before the user requested the resource. When the browser is idle and calculates that it's got enough bandwidth, it will make a request in order to load the resource, and cache it. Having the resource cached can reduce the loading time significantly.
+
+We can let Webpack know that certain bundles need to be prefetched, by adding a magic comment to the import statement: `/* webpackPrefetch: true */`.
+
+here is an example of lazy loading a [React component](./src/components/LazyLoadComponent/EmojiPicker.tsx)
 ```js
-import React, { Suspense, lazy, useState } from "react";
+import React, { Suspense, lazy, useState, useEffect } from "react";
 
 const EmojiPicker = lazy(()=>import(
     /* webpackPrefetch: true */ 
     /* webpackChunkName: "emoji-picker" */
-    "../EmojiPicker/EmojiPicker"
+    "./EmojiPicker"
 ))
 
-const TextInput = () => {
-    const [ showEmoji, setShowEmoji ] = useState(false)
+const ChatInput = () => {
+    const [ showEmojiPicker, setShowEmojiPicker ] = useState(false)
 
     return (
         <div>
             <div>
-                <input type="text" />
-                <span onClick={setShowEmoji.bind(null, true)}>show emojis</span>
+                <input type="text" placeholder="Type a message..." />
+                <button onClick={setShowEmojiPicker.bind(null, true)}>pick emojis</button>
             </div>
             
             <Suspense fallback={<span id="loading">Loading...</span>}>
-                {showEmoji && <EmojiPicker />}
+                { showEmojiPicker && <EmojiPicker /> }
             </Suspense>
         </div>
     )
 }
 
-export default TextInput
+export default ChatInput
 ```
 
-### lazy load a module
+Here is an example of lazy loading a [module](./src/utils/numbers.ts):
 ```js
-const showRandomNum = async()=>{
-    const { generateRandomNumber } = await import(
-        /* webpackPrefetch: true */ 
-        '../../utils/numbers'
+import React, { useState } from 'react'
+
+const RandomNumberCard = () => {
+
+    const [ randomNum, setRandomNum ] = useState<number>()
+
+    const getRandomNum = async()=>{
+
+        // load numbers module dynamically
+        const { generateRandomNumber } = await import(
+            '../../utils/numbers'
+        )
+        setRandomNum(generateRandomNumber(50, 100))
+    }
+
+    return (
+        <div>
+            <button onClick={getRandomNum}> get a random number </button>
+            { randomNum !== undefined && <span> { randomNum } </span> }
+        </div>
     )
-    setRandomNum(generateRandomNumber(50, 100))
 }
 
+export default RandomNumberCard
 ```
 
-### Non-blocking JavaScript
+### Use web worker
+JavaScript runs on the browser’s main thread, right alongside style calculations, layout, and, in many cases, paint. If your JavaScript runs for a long time, it will block these other tasks, potentially causing frames to be missed. Move heavey/pure computational work (code doesn’t require DOM access) to Web Workers and run it off the browser's main thread can thus improve the rendering performance significantly.
 
+Use worker loader to load web worker file, and communicate with the web worker by sending messages via the postMessage API:
+
+Here is an example of using web worker in a [React Component](./src/components/WebWorker/WebWorkerExample.tsx):
+
+```js
+import React, { useEffect, useState } from 'react';
+
+// load web worker
+import MyWorker from 'worker-loader!./worker';
+
+const n = 1e6;
+
+const WebWorkerExample = () => {
+    const [ count, setCount ] = useState<number>()
+
+    const getCountOfPrimeNumbers = async ()=> {
+
+        // create a web worker
+        const worker = new MyWorker();
+
+        // add message event listener to receive message returned by web worker
+        worker.addEventListener(
+            'message',
+            function (e) {
+                setCount(e.data.message);
+            },
+            false
+        );
+
+        // post message and have the web woker start doing geavy tasks in a separate thread
+        worker.postMessage(n);
+    };
+
+    return (
+        <div>
+            { count === undefined 
+                ? <button onClick={getCountOfPrimeNumbers}>get count</button>
+                : <p>{count} prime numbers found</p>
+            }
+        </div>
+        
+    );
+};
+
+export default WebWorkerExample;
+```
+
+
+here is the [worker.ts](./src/components/WebWorker/worker.ts):
+```js
+const ctx: Worker = self as any;
+
+// receive message from the main thread
+ctx.onmessage = async (e) => {
+
+    if(!e.data){
+        return 0
+    }
+
+    let count = 0;
+
+    // codes that get count of primes that can take long time to run...
+
+    // send message back to the main thred
+    ctx.postMessage({ message: count });
+};
+```
+
+<!--
 ### tree shaking
-
-### web worker
+-->
 
 ## Fonts
 ### Use preconnect to load your fonts faster:

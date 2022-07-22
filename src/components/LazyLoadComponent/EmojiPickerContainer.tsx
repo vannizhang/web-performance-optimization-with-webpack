@@ -6,20 +6,21 @@ const EmojiPicker = lazy(()=>import(
     "./EmojiPicker"
 ))
 
-const EmojiPickerContainer = () => {
-    const [ showEmoji, setShowEmoji ] = useState(false)
+const ChatInput = () => {
+    const [ showEmojiPicker, setShowEmojiPicker ] = useState(false)
 
     return (
         <div>
             <div>
-                <span onClick={setShowEmoji.bind(null, true)}>show emojis</span>
+                <input type="text" placeholder="Type a message..." />
+                <button onClick={setShowEmojiPicker.bind(null, true)}>pick emojis</button>
             </div>
             
             <Suspense fallback={<span id="loading">Loading...</span>}>
-                {showEmoji && <EmojiPicker />}
+                { showEmojiPicker && <EmojiPicker /> }
             </Suspense>
         </div>
     )
 }
 
-export default EmojiPickerContainer
+export default ChatInput

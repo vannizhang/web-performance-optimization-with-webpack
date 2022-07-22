@@ -2,9 +2,10 @@ import React, { useState } from 'react'
 
 const RandomNumberCard = () => {
 
-    const [randomNum, setRandomNum ] = useState<number>()
+    const [ randomNum, setRandomNum ] = useState<number>()
 
-    const showRandomNum = async()=>{
+    const getRandomNum = async()=>{
+
         const { generateRandomNumber } = await import(
             /* webpackPrefetch: true */ 
             '../../utils/numbers'
@@ -14,8 +15,8 @@ const RandomNumberCard = () => {
 
     return (
         <div>
-            <div onClick={showRandomNum}>get a random number</div>
-            { randomNum !== undefined && <span>{randomNum}</span>}
+            <div onClick={getRandomNum}> get a random number </div>
+            { randomNum !== undefined && <span> { randomNum } </span> }
         </div>
     )
 }
