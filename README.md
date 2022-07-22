@@ -22,11 +22,15 @@
     - [Minified JS](#minified-js)
     - [Lazy Loading JS](#lazy-loading-js)
     - [Use web worker](#use-web-worker)
-- Fonts
-    - preconnect
-    - cache strategy
-- Service Worker
-- Server side
+- [Fonts](#fonts)
+    <!---
+    - [Preconnect to load fonts faster](#preconnect-to-load-fonts-faster)
+    -->
+    - [Cache font resources](#cache-font-resources)
+- [Caching](#caching)
+    - [Use `[contenthash]` in output filenames](#use-contenthash-in-output-filenames)
+- [Others](#others)
+    - [Compress text files](#compress-text-files)
 
 ## HTML
 
@@ -532,7 +536,7 @@ export default RandomNumberCard
 ```
 
 ### Use web worker
-JavaScript runs on the browser’s main thread, right alongside style calculations, layout, and, in many cases, paint. If your JavaScript runs for a long time, it will block these other tasks, potentially causing frames to be missed. Move heavey/pure computational work (code doesn’t require DOM access) to Web Workers and run it off the browser's main thread can thus improve the rendering performance significantly.
+JavaScript runs on the browser’s main thread, right alongside style calculations, layout, and, in many cases, paint. If your JavaScript runs for a long time, it will block these other tasks, potentially causing frames to be missed. Move pure computational work (code doesn’t require DOM access) to Web Workers and run it off the browser's main thread can thus improve the rendering performance significantly.
 
 Use worker loader to load web worker file, and communicate with the web worker by sending messages via the postMessage API:
 
@@ -607,8 +611,10 @@ ctx.onmessage = async (e) => {
 -->
 
 ## Fonts
-### Use preconnect to load your fonts faster:
-- how: 
+<!--
+### Preconnect to load fonts faster:
+If the site loads fonts from a third-party site, use the preconnect resource hint to establish early connection(s) with the third-party origin.
+
 ```js
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const HtmlWebpackPreconnectPlugin = require('html-webpack-preconnect-plugin');
@@ -629,32 +635,102 @@ module.exports = {
     ]
 }
 ```
-### If your web application uses a service worker, serving font resources with a cache-first strategy is appropriate for most use cases: 
-https://web.dev/optimize-webfont-loading/#proper-caching-is-a-must
-https://developer.chrome.com/docs/workbox/using-workbox-without-precaching/
-https://developer.chrome.com/docs/workbox/caching-strategies-overview/
-- how: 
-./src/serviceWorker
+-->
 
+### Cache font resources
+Font resources are, typically, static resources that don't see frequent updates. As a result, they are ideally suited for a long max-age expiry. 
+
+In addition to the browser cache, using service worker to serve font resources with a cache-first strategy is appropriate for most use cases:
+
+[sw.js](./src/serviceWorker/sw.js)
+```js
+//...
+self.addEventListener('fetch', (event)=>{
+    
+    // Let the browser do its default thing
+    // for non-GET requests.
+    if (event.request.method != "GET") {
+        return;
+    };
+
+    // Check if this is a request for a font file
+    if (event.request.destination === 'font') {
+
+        // console.log('service worker fetching', event.request)
+        event.respondWith(caches.open(cacheName).then((cache) => {
+            // Go to the cache first
+            return cache.match(event.request.url).then((cachedResponse) => {
+                // Return a cached response if we have one
+                if (cachedResponse) {
+                    return cachedResponse;
+                }
+
+                // Otherwise, hit the network
+                return fetch(event.request).then((fetchedResponse) => {
+                    // Add the network response to the cache for later visits
+                    cache.put(event.request, fetchedResponse.clone());
+
+                    // Return the network response
+                    return fetchedResponse;
+                });
+            });
+        }));
+
+    } else {
+        return;
+    }
+})
+```
+
+## Caching
+### Use contenthash in output filenames
+
+We always want to have our static files be cahced by the browser with a long expiry time to improve the load speed. However, everytime when we make a change to our static files, we will want to make sure the browser can get the latest version of that file instead of retrieving the old one from the cache.
+
+This can be achieved by adding `[contenthash]` to the output filenames, `[contenthash]` is unique hash based on the content of an asset. When the asset's content changes, `[contenthash]` will change as well.
+
+[`webpack.config.js`](./webpack/prod.config.js)
+```js
+module.exports = {
+    //...
+    output: {
+        path: path.resolve(__dirname, '..', './dist'),
+        filename: '[name].[contenthash].js',
+        chunkFilename: '[name].[contenthash].js',
+        clean: true
+    }
+}
+```
+
+<!--
 ## service worker
 ### cache strategy
 - cache fonts and other static files
 according to https://developer.chrome.com/docs/workbox/caching-strategies-overview/, **Cache first, falling back to network** is a great strategy to apply to all static assets (such as CSS, JavaScript, images, and fonts), especially hash-versioned ones. It offers a speed boost for immutable assets by side-stepping any content freshness checks with the server the HTTP cache may kick off. More importantly, any cached assets will be available offline.
 
-## Server side 
-- content hash in output file names
-- Improve Website Performance Using gzip: https://www.digitalocean.com/community/tutorials/how-to-improve-website-performance-using-gzip-and-nginx-on-ubuntu-20-04, Normally, this is done by a server like Apache or Nginx on runtime; but you might want to pre-build compressed assets to save the runtime cost. compression-webpack-plugin works for Gzip and Brotli
-    - how: 
-    ```js
-    const CompressionPlugin = require("compression-webpack-plugin");
+https://developer.chrome.com/docs/workbox/using-workbox-without-precaching/#webpack
+-->
 
-    module.exports = {
-        plugins: [
-            new CompressionPlugin()
-        ]
-    };
-    ```
-- preconnect, and dns-prefecting
+## Others
+
+### Compress text files
+Compress text files and reduce the size of these files can improve load speed, normally, this is handled by a server like Apache or Nginx on runtime, but you might want to pre-build compressed assets to save the runtime cost. 
+
+Use [`CompressionWebpackPlugin`](https://webpack.js.org/plugins/compression-webpack-plugin/) to prepare compressed versions of assets.
+
+```js
+const CompressionPlugin = require("compression-webpack-plugin");
+
+module.exports = {
+    //...
+    plugins: [
+        new CompressionPlugin()
+    ]
+};
+```
+<!--
+### preconnect, and dns-prefecting
+-->
 
 ## Resources
 - [Fast load times](https://web.dev/fast/)
@@ -662,6 +738,7 @@ according to https://developer.chrome.com/docs/workbox/caching-strategies-overvi
 - [Awesome Webpack Perf ](https://github.com/iamakulov/awesome-webpack-perf)
 - [Critical CSS and Webpack: Automatically Minimize Render-Blocking CSS](https://vuejsdevelopers.com/2017/07/24/critical-css-webpack/)
 - [Webpack - How to convert jpg/png to webp via image-webpack-loader](https://stackoverflow.com/questions/58827843/webpack-how-to-convert-jpg-png-to-webp-via-image-webpack-loader)
+- [Best practices for fonts](https://web.dev/font-best-practices/)
 
 ## Contribute
 Please feel free to open an issue or a pull request to suggest changes, improvements or fixes.
