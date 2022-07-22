@@ -18,8 +18,8 @@
     - [Serve responsive images](#serve-responsive-images-not-finished)
     -->
 - JavaScript
-    - split chunks
-    - minify and mangle output JS
+    - [Split chunks](#split-chunks)
+    - [Minified JS](#minified-js)
     - lazy load component and modules
     - use web worker
 - Fonts
@@ -411,33 +411,38 @@ It seems [`responsive-loader`](https://github.com/dazuaz/responsive-loader) can 
 -->
 
 ## JavaScript
-### split chunks
-- why: Code split vendors with webpack can help to improve caching: https://blog.jakoblind.no/code-split-vendors-with-webpack-for-faster-load-speed/
-- how: use SplitChunksPlugin to Create a custom vendor chunk, which contains certain node_modules packages matched by RegExp.
+### Split chunks
+Code split vendors (dependencies) into a separate bundle to improve caching. Our application code changes more often than the vendor code because we adjust versions of your dependencies less frequently. Split vendor bundles allows the broswer to continue using cached vendor bundle as long as it's not change.
 
-    ```js
-    module.exports = {
-        //...
-        optimization: {
-            splitChunks: {
-                cacheGroups: {
-                    // vendor chunk
-                    vendor: {
-                        // sync + async chunks
-                        idHint: 'vendor',
-                        // import file path containing node_modules
-                        test: /node_modules/
-                    }
+Use out of the box `SplitChunksPlugin` to split chunks, and we tune the [`optimization.splitChunks`](https://webpack.js.org/plugins/split-chunks-plugin/#optimizationsplitchunks) configuration to split vendor bundles.
+
+[`webpack.config.js`](./webpack/prod.config.js)
+```js
+module.exports = {
+    //...
+    optimization: {
+        splitChunks: {
+            cacheGroups: {
+                // vendor chunk
+                vendor: {
+                    // sync + async chunks
+                    chunks: 'all',
+                    name: 'vendor',
+                    // import file path containing node_modules
+                    test: /node_modules/
                 }
-            },
-        }
+            }
+        },
     }
-    ```
-### minify and mangle output JS
-- why:
-- how: use TerserPlugin
-- references: https://github.com/terser/terser
+}
+```
 
+### Minified JS
+Like HTML and CSS files, removing all unnecessary spaces, comments and break will reduce the size of your JavaScript files and speed up your site's page load times. 
+
+Use [`TerserWebpackPlugin`](https://webpack.js.org/plugins/terser-webpack-plugin/) to minify/minimize the output JavaScript files:
+
+[`webpack.config.js`](./webpack/prod.config.js)
 ```js
 const TerserPlugin = require('terser-webpack-plugin');
 
@@ -446,7 +451,14 @@ module.exports = {
     optimization: {
         minimize: true,
         minimizer: [
-            new TerserPlugin()
+            new TerserPlugin({
+                extractComments: true,
+                terserOptions: {
+                    compress: {
+                        drop_console: true,
+                    }
+                }
+            }), 
         ],
     },
 };
@@ -499,6 +511,8 @@ const showRandomNum = async()=>{
 }
 
 ```
+
+### Non-blocking JavaScript
 
 ### tree shaking
 

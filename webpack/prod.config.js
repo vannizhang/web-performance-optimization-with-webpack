@@ -188,6 +188,7 @@ module.exports =  (env, options)=> {
                     }
                 }
             },
+            // Tell webpack to minimize the bundle using the TerserPlugin
             minimize: true,
             minimizer: [
                 new CssMinimizerPlugin(),
@@ -196,10 +197,9 @@ module.exports =  (env, options)=> {
                     terserOptions: {
                         compress: {
                             drop_console: true,
-                        },
-                        mangle: true
+                        }
                     }
-                }), 
+                })
             ],
         }
     } 
