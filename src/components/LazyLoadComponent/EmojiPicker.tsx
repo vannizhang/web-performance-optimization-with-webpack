@@ -1,11 +1,11 @@
 import React from 'react'
 
 type EmojiData = {
-    name: string; 
+    name: string
     decimal: number
 }
 
-const emojis:EmojiData[] = [
+const emojis: EmojiData[] = [
     {
         name: 'soccer-ball',
         decimal: 9917
@@ -25,13 +25,15 @@ const emojis:EmojiData[] = [
     {
         name: 'laugh',
         decimal: 128514
-    },
+    }
 ]
 
 const EmojiPicker = () => {
     return (
         <div>
-            { emojis.map(({ name, decimal })=><span key={name}>{ String.fromCodePoint(decimal) }</span>)}
+            {emojis.map(({ name, decimal }) => (
+                <span key={name}>{String.fromCodePoint(decimal)}</span>
+            ))}
         </div>
     )
 }

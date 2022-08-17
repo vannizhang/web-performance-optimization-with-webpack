@@ -1,18 +1,13 @@
-import './styles/index.css';
+import './styles/index.css'
 
-import React from 'react';
-import { createRoot } from 'react-dom/client';
-import Layout from './components/Layout';
-import { registerServiceWorker } from './serviceWorker/register';
-
-(async()=>{
-
+import React from 'react'
+import { createRoot } from 'react-dom/client'
+import Layout from './components/Layout'
+import { registerServiceWorker } from './serviceWorker/register'
+;(async () => {
     await registerServiceWorker()
 
-    const root = createRoot(document.getElementById('root'));
+    const root = createRoot(document.getElementById('root'))
 
-    root.render(
-        <Layout />
-    );
+    root.render(<Layout />)
 })()
-

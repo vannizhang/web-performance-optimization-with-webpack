@@ -7,7 +7,7 @@ const WebpImage = () => {
         <picture>
             <source type="image/webp" srcSet={nightSkyWebP} />
             <source type="image/jpeg" srcSet={nightSkyJPG} />
-            <img src={nightSkyJPG} alt="" width={500}/>
+            <img src={nightSkyJPG} alt="" width={500} />
         </picture>
     )
 }
