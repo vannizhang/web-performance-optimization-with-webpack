@@ -82,18 +82,18 @@ module.exports =  {
                             },
                         }
                     },
-                    {
-                        loader: 'image-webpack-loader',
-                        options: {
-                            mozjpeg: {
-                                progressive: true,
-                                quality: 50,
-                            },
-                            pngquant: {
-                                quality: [0.5, 0.5]
-                            }
-                        }
-                    }
+                    // {
+                    //     loader: 'image-webpack-loader',
+                    //     options: {
+                    //         mozjpeg: {
+                    //             progressive: true,
+                    //             quality: 50,
+                    //         },
+                    //         pngquant: {
+                    //             quality: [0.5, 0.5]
+                    //         }
+                    //     }
+                    // }
                 ]
             },
         ]
