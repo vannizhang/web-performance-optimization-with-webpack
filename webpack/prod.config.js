@@ -7,6 +7,7 @@ const TerserPlugin = require('terser-webpack-plugin');
 const CompressionPlugin = require("compression-webpack-plugin");
 const PreloadWebpackPlugin = require('@vue/preload-webpack-plugin');
 const HtmlWebpackPreconnectPlugin = require('html-webpack-preconnect-plugin');
+const ImageMinimizerPlugin = require("image-minimizer-webpack-plugin");
 
 module.exports =  {
     mode: 'production',
@@ -71,29 +72,17 @@ module.exports =  {
                             name(resourcePath, resourceQuery){
 
                                 if(resourcePath.includes('preload')){
-                                    return 'preload.[contenthash].[ext]';
+                                    return 'preload.[name].[contenthash].[ext]';
                                 } 
                                 
                                 if (resourcePath.includes('prefetch')){
-                                    return 'prefetch.[contenthash].[ext]';
+                                    return 'prefetch.[name].[contenthash].[ext]';
                                 }
 
-                                return '[contenthash].[ext]';
+                                return '[name].[contenthash].[ext]';
                             },
                         }
-                    },
-                    // {
-                    //     loader: 'image-webpack-loader',
-                    //     options: {
-                    //         mozjpeg: {
-                    //             progressive: true,
-                    //             quality: 50,
-                    //         },
-                    //         pngquant: {
-                    //             quality: [0.5, 0.5]
-                    //         }
-                    //     }
-                    // }
+                    }
                 ]
             },
         ]
@@ -189,6 +178,20 @@ module.exports =  {
                 terserOptions: {
                     compress: {
                         drop_console: true,
+                    }
+                }
+            }),
+            new ImageMinimizerPlugin({
+                minimizer: { 
+                    implementation: ImageMinimizerPlugin.squooshMinify,
+                    options: {
+                        // encodeOptions: {
+                        //     mozjpeg: {
+                        //         // That setting might be close to lossless, but it’s not guaranteed
+                        //         // https://github.com/GoogleChromeLabs/squoosh/issues/85
+                        //         quality: 100,
+                        //     },
+                        // }
                     }
                 }
             })

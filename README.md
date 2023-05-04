@@ -199,35 +199,32 @@ According to [Ilya Grigorik](https://www.igvita.com/):
 
 ### Compress images
 
-Use [`image-webpack-loader`](https://github.com/tcoopman/image-webpack-loader) to minify PNG, JPEG, GIF, SVG and WEBP images with [`imagemin`](https://github.com/imagemin/imagemin).
+Use [`ImageMinimizerWebpackPlugin`](https://webpack.js.org/plugins/image-minimizer-webpack-plugin/) to minify PNG, JPEG, GIF, SVG and WEBP images with [`imagemin`](https://github.com/imagemin/imagemin), [squoosh](https://github.com/GoogleChromeLabs/squoosh), [sharp](https://github.com/lovell/sharp) or [svgo](https://github.com/svg/svgo).
 
 [`webpack.config.js`](./webpack/prod.config.js)
 ```js
+const ImageMinimizerPlugin = require("image-minimizer-webpack-plugin");
+
 module.exports = {
     //...
-    module: {
-        rules: [
-            //...
-            { 
-                test: /\.(png|jpg|gif|svg|webp)$/,  
-                use : [
-                    {
-                        loader: "file-loader"
-                    },
-                    {
-                        loader: 'image-webpack-loader',
-                        options: {
-                            mozjpeg: {
-                                progressive: true,
-                                quality: 50,
-                            },
-                            pngquant: {
-                                quality: [0.5, 0.5]
-                            },
-                        }
+    optimization: {
+        //..
+        minimizer: [
+            //..
+            new ImageMinimizerPlugin({
+                minimizer: { 
+                    implementation: ImageMinimizerPlugin.squooshMinify,
+                    options: {
+                        // encodeOptions: {
+                        //     mozjpeg: {
+                        //         // That setting might be close to lossless, but it’s not guaranteed
+                        //         // https://github.com/GoogleChromeLabs/squoosh/issues/85
+                        //         quality: 100,
+                        //     },
+                        // }
                     }
-                ]
-            }
+                }
+            })
         ]
     }
 }
